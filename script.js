@@ -3,8 +3,20 @@ const nav = document.querySelector("[data-nav]");
 const navToggle = document.querySelector("[data-nav-toggle]");
 const themeToggle = document.querySelector("[data-theme-toggle]");
 const themeLabel = document.querySelector("[data-theme-label]");
+const headerActions = document.querySelector(".header-actions");
 
 document.documentElement.classList.add("js");
+
+if (window.matchMedia("(pointer: fine)").matches) {
+  window.addEventListener(
+    "pointermove",
+    (event) => {
+      document.documentElement.style.setProperty("--spotlight-x", `${event.clientX}px`);
+      document.documentElement.style.setProperty("--spotlight-y", `${event.clientY}px`);
+    },
+    { passive: true }
+  );
+}
 
 const getStoredTheme = () => {
   try {
@@ -36,6 +48,91 @@ themeToggle?.addEventListener("click", () => {
   const nextTheme = document.documentElement.dataset.theme === "dark" ? "light" : "dark";
   setTheme(nextTheme);
   storeTheme(nextTheme);
+});
+
+const commands = [
+  { label: "Home", detail: "Start here", href: "index.html" },
+  { label: "About", detail: "Path, hobbies, interests", href: "about.html" },
+  { label: "Projects", detail: "CLOVER, PaddleIQ, ModMyCar", href: "projects.html" },
+  { label: "Experience", detail: "Research and engineering", href: "experience.html" },
+  { label: "Research", detail: "ACM paper and recognition", href: "research.html" },
+  { label: "Community", detail: "ACM, OwlHacks, Owl Byte", href: "community.html" },
+  { label: "Contact", detail: "Email, GitHub, LinkedIn", href: "contact.html" },
+  { label: "Resume", detail: "Open PDF", href: "assets/antonio-lazaro-resume.pdf" },
+];
+
+const commandTrigger = document.createElement("button");
+commandTrigger.className = "command-trigger";
+commandTrigger.type = "button";
+commandTrigger.textContent = "Command";
+commandTrigger.setAttribute("aria-haspopup", "dialog");
+headerActions?.prepend(commandTrigger);
+
+const commandOverlay = document.createElement("div");
+commandOverlay.className = "command-overlay";
+commandOverlay.setAttribute("role", "dialog");
+commandOverlay.setAttribute("aria-modal", "true");
+commandOverlay.setAttribute("aria-label", "Command palette");
+commandOverlay.innerHTML = `
+  <div class="command-palette">
+    <label for="command-search">Navigate</label>
+    <input id="command-search" type="search" autocomplete="off" placeholder="Type a page, project, or topic" />
+    <ul class="command-list"></ul>
+    <p class="command-empty">No matching route.</p>
+  </div>
+`;
+document.body.append(commandOverlay);
+
+const commandInput = commandOverlay.querySelector("#command-search");
+const commandList = commandOverlay.querySelector(".command-list");
+const commandEmpty = commandOverlay.querySelector(".command-empty");
+
+const renderCommands = (query = "") => {
+  const normalized = query.trim().toLowerCase();
+  const matches = commands.filter((command) =>
+    `${command.label} ${command.detail}`.toLowerCase().includes(normalized)
+  );
+
+  if (commandList) {
+    commandList.innerHTML = matches
+      .map(
+        (command) =>
+          `<li><a href="${command.href}"><strong>${command.label}</strong><span>${command.detail}</span></a></li>`
+      )
+      .join("");
+  }
+
+  if (commandEmpty) commandEmpty.style.display = matches.length ? "none" : "block";
+};
+
+const openCommands = () => {
+  renderCommands();
+  commandOverlay.classList.add("is-open");
+  commandInput?.focus();
+};
+
+const closeCommands = () => {
+  commandOverlay.classList.remove("is-open");
+  if (commandInput) commandInput.value = "";
+};
+
+commandTrigger.addEventListener("click", openCommands);
+commandInput?.addEventListener("input", () => renderCommands(commandInput.value));
+commandOverlay.addEventListener("click", (event) => {
+  if (event.target === commandOverlay) closeCommands();
+});
+
+document.addEventListener("keydown", (event) => {
+  const wantsCommand = (event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "k";
+
+  if (wantsCommand) {
+    event.preventDefault();
+    openCommands();
+  }
+
+  if (event.key === "Escape" && commandOverlay.classList.contains("is-open")) {
+    closeCommands();
+  }
 });
 
 const currentPage = document.documentElement.dataset.page;
