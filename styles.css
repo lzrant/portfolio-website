@@ -286,9 +286,9 @@ h1 {
 }
 
 .hero h1 {
-  max-width: 12ch;
-  font-size: clamp(3.2rem, 7.4vw, 6.25rem);
-  line-height: 0.94;
+  max-width: 13ch;
+  font-size: clamp(2.85rem, 5.8vw, 5.2rem);
+  line-height: 0.96;
 }
 
 .page-section h1 {
@@ -367,6 +367,12 @@ h3 {
 .hero-photo {
   position: relative;
   margin: 0;
+  padding: clamp(0.8rem, 1.4vw, 1rem);
+  border: 1px solid var(--red);
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.26), transparent 38%),
+    var(--panel-bg);
+  box-shadow: var(--shadow);
 }
 
 .hero-dashboard {
@@ -494,14 +500,6 @@ h3 {
   background: linear-gradient(90deg, var(--red), var(--blue), var(--green));
 }
 
-.hero-photo::before {
-  content: "";
-  position: absolute;
-  inset: -18px 18px 18px -18px;
-  z-index: -1;
-  border: 1px solid var(--red);
-}
-
 .hero-photo img,
 .wide-photo img,
 .community-photo img {
@@ -512,16 +510,17 @@ h3 {
 }
 
 .hero-photo img {
+  display: block;
   object-position: 54% 42%;
+  box-shadow: none;
 }
 
 .hero-photo figcaption {
   display: grid;
   gap: 0.35rem;
-  max-width: 32rem;
-  margin-top: 0.9rem;
+  margin: 0.85rem 0 0;
   color: var(--muted);
-  font-size: 0.98rem;
+  font-size: 0.94rem;
   line-height: 1.45;
 }
 
@@ -1172,6 +1171,10 @@ dd {
 
   h1 {
     font-size: clamp(3.05rem, 17vw, 4.6rem);
+  }
+
+  .hero h1 {
+    font-size: clamp(2.55rem, 13vw, 3.65rem);
   }
 
   h2 {
